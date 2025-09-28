@@ -1,0 +1,16 @@
+[tool.poetry]
+name = "py-articles-api"
+version = "0.1.0"
+description = "A REST API for articles implemented with FastAPI"
+authors = ["Avin <avin@viduli.io>"]
+
+[tool.poetry.dependencies]
+python = "^3.11"
+fastapi = {extras = ["standard"], version = "^0.116.0"}
+uvicorn = "^0.34.3"
+sqlmodel = "^0.0.25"
+psycopg2-binary = "^2.9.10"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api" 
