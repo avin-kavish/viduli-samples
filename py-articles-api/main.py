@@ -46,7 +46,7 @@ def get_session():
 app = FastAPI(title="Articles API", description="A REST API for managing articles")
 
 
-@app.get("/hello-world")
+@app.get("/articles//hello-world")
 async def hello_world():
     return {"message": "Hello World!"}
 
