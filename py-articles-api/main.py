@@ -46,11 +46,6 @@ def get_session():
 app = FastAPI(title="Articles API", description="A REST API for managing articles")
 
 
-@app.get("/articles//hello-world")
-async def hello_world():
-    return {"message": "Hello World!"}
-
-
 # CRUD endpoints for articles
 @app.post("/articles/", response_model=ArticlePublic)
 def create_article(article: ArticleCreate, session: Session = Depends(get_session)):
@@ -111,3 +106,8 @@ def delete_article(article_id: int, session: Session = Depends(get_session)):
     session.delete(article)
     session.commit()
     return {"ok": True}
+
+
+@app.get("/articles/hello-world")
+async def hello_world():
+    return {"message": "Hello World!"}
