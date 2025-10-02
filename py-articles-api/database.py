@@ -1,6 +1,9 @@
 import os
 from sqlmodel import SQLModel, create_engine
 
+# Import models to ensure they're registered with SQLModel metadata
+from models import Article
+
 # Database configuration
 DATABASE_URL = os.getenv(
     "ARTICLES_DB_URL", "postgresql://username:password@localhost/articles_db"

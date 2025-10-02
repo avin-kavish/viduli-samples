@@ -1,44 +1,15 @@
 from typing import List
 
 from fastapi import Depends, FastAPI, HTTPException, Query
-from sqlmodel import Field, Session, SQLModel, select
+from sqlmodel import Session, select
 
 from database import get_engine
-
-
-# Article models
-class ArticleBase(SQLModel):
-    title: str = Field(index=True)
-    content: str
-    author: str = Field(index=True)
-    published: bool = Field(default=False)
-
-
-class Article(ArticleBase, table=True):
-    id: int | None = Field(default=None, primary_key=True)
-
-
-class ArticlePublic(ArticleBase):
-    id: int
-
-
-class ArticleCreate(ArticleBase):
-    pass
-
-
-class ArticleUpdate(SQLModel):
-    title: str | None = None
-    content: str | None = None
-    author: str | None = None
-    published: bool | None = None
-
-
-# Get database engine
-engine = get_engine()
+from models import Article, ArticleCreate, ArticlePublic, ArticleUpdate
 
 
 # Database functions
 def get_session():
+    engine = get_engine()
     with Session(engine) as session:
         yield session
 
