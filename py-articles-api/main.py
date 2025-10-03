@@ -1,9 +1,10 @@
 from typing import List
 
-from fastapi import Depends, FastAPI, HTTPException, Query
+from fastapi import Depends, FastAPI, HTTPException, Query, status
+from fastapi.responses import JSONResponse
 from sqlmodel import Session, select
 
-from database import get_engine
+from database import get_engine, get_redis_client
 from models import Article, ArticleCreate, ArticlePublic, ArticleUpdate
 
 
@@ -15,6 +16,49 @@ def get_session():
 
 
 app = FastAPI(title="Articles API", description="A REST API for managing articles")
+
+
+@app.get("/articles/_health")
+async def health_check():
+    """Health check endpoint that verifies database and redis connections"""
+    health_status = {
+        "status": "healthy",
+        "database": "healthy",
+        "redis": "healthy",
+    }
+
+    # Check database connection
+    try:
+        engine = get_engine()
+        with Session(engine) as session:
+            # Simple query to test database connection
+            session.exec(select(1)).first()
+    except Exception as e:
+        health_status["database"] = f"unhealthy: {str(e)}"
+        health_status["status"] = "unhealthy"
+
+    # Check redis connection
+    try:
+        redis_client = get_redis_client()
+        redis_client.ping()
+    except Exception as e:
+        health_status["redis"] = f"unhealthy: {str(e)}"
+        health_status["status"] = "unhealthy"
+
+    # Return appropriate HTTP status code
+    return JSONResponse(
+        status_code=(
+            status.HTTP_200_OK
+            if health_status["status"] == "healthy"
+            else status.HTTP_503_SERVICE_UNAVAILABLE
+        ),
+        content=health_status,
+    )
+
+
+@app.get("/articles/hello-world")
+async def hello_world():
+    return {"message": "Hello World!"}
 
 
 # CRUD endpoints for articles
@@ -77,8 +121,3 @@ def delete_article(article_id: int, session: Session = Depends(get_session)):
     session.delete(article)
     session.commit()
     return {"ok": True}
-
-
-@app.get("/articles/hello-world")
-async def hello_world():
-    return {"message": "Hello World!"}
