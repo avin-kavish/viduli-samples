@@ -9,7 +9,7 @@ DATABASE_URL = os.getenv(
     "ARTICLES_DB_URL", "postgresql://username:password@localhost/articles_db"
 )
 # SQLAlchemy will automatically use psycopg3 if available
-engine = create_engine(DATABASE_URL, echo=True)
+engine = create_engine(DATABASE_URL, echo=True, pool_pre_ping=True)
 
 
 def create_db_and_tables():
